@@ -49,7 +49,7 @@ pub struct Texture {
 
 impl Texture {
     /// Creates a new imgui texture from a wgpu texture.
-    pub fn new(texture: wgpu::Texture, layout: &BindGroupLayout, device: &Device) -> Self {
+    pub fn new(texture: &wgpu::Texture, layout: &BindGroupLayout, device: &Device) -> Self {
         // Extract the texture view.
         let view = texture.create_default_view();
 
@@ -540,8 +540,11 @@ impl Renderer {
         // Resolve the actual copy process.
         queue.submit(&[encoder.finish()]);
 
-        let texture = Texture::new(texture, &self.texture_layout, device);
-        self.textures.insert(texture)
+        self.insert_texture(&texture, device)
+    }
+
+    pub fn insert_texture(&mut self, texture: &wgpu::Texture, device: &Device) -> TextureId {
+        self.textures.insert(Texture::new(texture, &self.texture_layout, device))
     }
 }
 
